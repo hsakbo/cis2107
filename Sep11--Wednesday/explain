@@ -1,0 +1,10 @@
+
+preprocessor --> cleaned c code
+
+compiler --> transforms c into assemply
+
+assembler --> converts assembly to binary. Object code
+
+linker --> combines all objects into one.
+
+

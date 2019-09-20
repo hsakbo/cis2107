@@ -1,0 +1,12 @@
+less (display cat in pages)
+head -3 file -->This will display the first 3 lines
+tail -15 commands ---> will produce last 15 lines
+grep -i SySTem file.txt --> will find lines that contain system but is case insensitve
+grep -v system file.txt ---> finds lines that don't contain system
+grep -n system file.txt ---> gives the line number of the result
+
+
+sort ---> delimited by \n and ends with ctrl+d EOF
+who --> information about logged in users
+who | wc -l --> will count lines on who
+chmod u=rw,g=r,o=r commands
