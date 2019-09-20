@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 	fputc(c, des);
     }
 */
-    /*
+    
   if(open == 1)
     printf("Error, mismatched quotes");
 
