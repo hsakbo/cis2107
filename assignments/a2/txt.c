@@ -1,0 +1,2 @@
+
+"some /* crazy */ stuff"

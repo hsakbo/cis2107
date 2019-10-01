@@ -1,7 +1,10 @@
 #include <stdio.h>
-//#include <unistd.h> //wanted to remove the output file, if mismatched quotes
 
+//professor, this is not the best approach, machine states need not be explicit, especially when it comes to automata as they are abstract by nature and can take any form in the real world. They don't neccesarily have to be assigned to a variable when they can virtually exist in the control flow of the execution. My previous code is an example of it as I based my e-NFA on the code, not the other way around. These states can be implicitly defined inside if statements and so forth.
 
+enum states{DEFAULT=1, OPEN_SLASH, REDACT, CLOSE_STAR, NEW_LINE, STRING_LITERAL, SPACING};
+
+int state = DEFAULT;
 
 
 //this is a minor feature to remove all recurring \n
@@ -21,24 +24,11 @@ int line_compressor(FILE *des, FILE *fp)
   return lines;
 }
 
-//the space handler, it will remove additional spaces but if it starts from a newline, then it will print those spaces.
-//note that when this function is about to end the cursor is pulled back one byte, it is for the main loop to handle that char.
+
 void spaces(FILE *fp, FILE *des)
 { 
   fseek(fp, -3, SEEK_CUR); //should be -2...
   
-  //further gdb testing shows that the first offset is consumed for an unknown reason, as it indicates a space char ' ' appearing twice per offset -1 and -2, with 0 being the current SEEK_CUR position.
-
-  //I will, for now, conclude that this behaviour has got something to do with file buffering. Until disproven. (scientific method)
-  
-   /*explanation for the hypothesis: I have called c = fgetc(fp) down in the main() and once it returns a space character, this function is called onto the stack.
-
-   *Since our offset is +1 due to the initial call of ONE fgetc(fp) in the main loop, it will have already been advanced to the next position.
-
-   *fseeking -1 offset will move the cursor to the initial space that called this function in the main loop. The \n before the initial space is what I want c to get matched by the if call below, which is another -1.
- 
-   *Thus the offset adds upto to -2 and NOT -3 for fgetc to return \n
-   */
 
   char c = fgetc(fp);
   
@@ -61,49 +51,29 @@ void spaces(FILE *fp, FILE *des)
 
 
 //what it does: once /* has been seen, it ignores the stuff until */
-int inner_loop(FILE *fp, FILE *des, int *open)
-{
-  int linum = 0;
-  int space = 2;
-  char c;
-  
-  while(!feof(fp))
+int former_loop(FILE *des, char c, int space)
+{     
+  if(c == '*')
     {
-      
-      if((c=fgetc(fp)) == '*' && c != EOF)
+      space++;
+      state = CLOSE_STAR;
+      /*
+      if((c=fgetc(fp)) == '/' && c != EOF)
 	{
 	  space++;
-	  if((c=fgetc(fp)) == '/' && c != EOF)
-	    {
-	      space++;
-	      for(int i = 0; i < space; i++)
-		fprintf(des, " ");
-			  
-	      *open = 0;
-	      break;
-	    }
-	  else if(c == '\n')
-	    {
-	      space = 0;
-	      linum++;
-	      continue;
-	    }
-	  else
-	    {
-	      space++;
-	      continue;
-	    }
+	  for(int i = 0; i < space; i++)
+	    fprintf(des, " ");
+	  
+	  space = 2;
+	  *open = 0;
+	  return;
 	}
-		  
-      if(c == '\n' && (c!= EOF))
-	{
-	  space = 0;
-	  linum++;
-	  continue;
-	}
-      space++;
+      */
+      return space;
     }
-  return linum;
+		        
+  space++;
+  return space;
 }
 
 
@@ -161,12 +131,107 @@ int main(int argc, char **argv)
   char c; 
   int linum = 1; //line counter
   int loc = 0; //location for open quote
+  int space = 2; //padding   
   
   
-  //main loop.
-  //my states are in the global scope, I would have adjusted the relevant states even if I call different methods in this loop. Thus, I have respected the goals of this assignment.
+  //main loop.  
   while(!feof(fp))
     {
+      c = fgetc(fp);
+      switch(state)
+	{
+	case DEFAULT:
+	  if(c == '/')
+	    state = OPEN_SLASH;	      
+	    
+	  else if(c == '"')	    
+	    state = STRING_LITERAL;	    
+	    
+	  else if(c == ' ')	    	    
+	    state = SPACING;
+	    
+	  else if(c == '\n')	    	    
+	    state = NEW_LINE;
+	    
+	  else
+	    fputc(c, des);
+	  break;
+
+	case OPEN_SLASH:
+
+	  if(c == '*')
+	    state = REDACT;
+
+	  else if(c == '"')
+	    {
+	      fputc('/', des);
+	      state = STRING_LITERAL;
+	    }
+	  else if(c == '\n')
+	    {
+	      fputc('/', des);
+	      state = NEW_LINE;
+	    }
+	  else if(c == ' ')
+	    {
+	      fputc('/', des);
+	      state = SPACING;
+	    }
+	  else
+	    {
+	      fprintf(des, "/%c", c);
+	      state = DEFAULT;
+	    }
+	  break;
+	  
+	case REDACT:
+	  open = 1;
+	  loc = linum;
+	  if(c == '\n') //this I won't define explicitly
+	    {
+	      linum++;
+	      space = 0;
+	    }
+	  else if(c == '*')
+	    {
+	      space++;
+	      state = CLOSE_STAR;
+	    }
+	  space++;
+	  break;
+
+	case CLOSE_STAR:
+	  if(c == '/')
+	    {
+	      space++;
+	      for(int i = 0; i < space; i++)
+		fprintf(des, " ");
+	      
+	      space = 2;
+	      open = 0;
+	      state = DEFAULT;
+	    }
+	  else
+	    {
+	      space++;	      
+	      state = REDACT;
+
+	      if(c == '\n')
+		{//likewise, these newlines are different from state NEW_LINE as they don't have to be outputted
+		  linum++;
+		  space = 0;
+		}
+	  break;
+
+	case NEW_LINE:
+	  
+
+
+
+
+
+
+      /*
       if((c=fgetc(fp)) == '"' && !open)
 	{
 	  fputc(c, des);
@@ -221,7 +286,7 @@ int main(int argc, char **argv)
       else
 	fputc(c, des);
     
-
+      */
     }
 
   fclose(fp);

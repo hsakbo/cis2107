@@ -1,15 +1,7 @@
 #include <stdio.h>
 int main(int argc, char **argv)
 {
-      /
-  if(argc != 3)
-    {
-      printf("use: parser source destination, args: %d\n", argc);
-      return 1;
-      }/
-      
+  awdnuaiolwkudb hnoauwdhauoida;
+    awdolinaow
     
-  if(open == 1)
-    printf("Error, mismatched quotes");
-  return 0;
-}
+  

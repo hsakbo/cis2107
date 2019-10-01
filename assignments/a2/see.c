@@ -3,7 +3,9 @@
 
 int main(int argc, char **argv)
 {
-  /**//
+  awdnuaiolwkudb       hnoauwdhauoida;
+    awdolinaow
+  /**"/*uywbdia*
   if(argc != 3)
     {
       printf("use: parser source destination, args: %d\n", argc);
@@ -69,9 +71,9 @@ int main(int argc, char **argv)
 	fputc(c, des);
     }
 */
-    
+  /*    
   if(open == 1)
-    printf("Error, mismatched quotes");
+    printf("Error, mismatched quotes"");
 
   return 0;
 }
