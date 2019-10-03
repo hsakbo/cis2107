@@ -127,13 +127,14 @@ int main(int argc, char **argv)
 
 //i and j are destroyed by bit-shifting to the right, as I use (var)&1 for each to determine the very last position's number. I also keep track of the position by bitshifting a 1 through each iteration of my loop. This pos variable is the key in setting up the return value called 'ret'.
 
-unsigned int add(unsigned int i, unsigned int j) 
+/*
+unsigned int my_first_add(unsigned int i, unsigned int j) 
 {
 
 
   /* can be done in a total of 7 lines, including one to declare an unsigned int, */
   /* two for a while loop, and one for the return
-     You're not required to do it in 7 lines though . */
+     You're not required to do it in 7 lines though . 
 
   
   unsigned int ret = 0;
@@ -168,7 +169,17 @@ unsigned int add(unsigned int i, unsigned int j)
       
   return ret;
 }
+*/
 
+
+//only took a few hours to arrive to this conclusion, 3 lines
+unsigned int add(unsigned int i, unsigned int j)
+{
+  if(!(i&j))
+    return i^j;
+
+  return add(i^j, (i&j)<<1);
+}
 
 
 
