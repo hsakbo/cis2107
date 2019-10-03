@@ -172,15 +172,14 @@ unsigned int my_first_add(unsigned int i, unsigned int j)
 */
 
 
-//only took a few hours to arrive to this conclusion, 3 lines
+//only took a few hours to arrive to this conclusion, 2 lines
 unsigned int add(unsigned int i, unsigned int j)
 {
-  if(!(i&j))
-    return i^j;
-
+  //I've seen these if statements in the linux community.
+  if(!(i&j))   return i^j;  
+  
   return add(i^j, (i&j)<<1);
 }
-
 
 
   //although I never got help from the internet while completing this, I am ever so glad that I don't have a life and read wikipedia when I am bored/curious.
