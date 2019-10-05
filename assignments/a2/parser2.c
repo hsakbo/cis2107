@@ -2,79 +2,54 @@
 
 //professor, this is not the best approach, machine states need not be explicit, especially when it comes to automata as they are abstract by nature and can take any form in the real world. They don't neccesarily have to be assigned to a variable when they can virtually exist in the control flow of the execution. My previous code is an example of it as I based my e-NFA on the code, not the other way around. These states can be implicitly defined inside if statements and so forth.
 
-enum states{DEFAULT=1, OPEN_SLASH, REDACT, CLOSE_STAR, NEW_LINE, STRING_LITERAL, SPACING};
-
-int state = DEFAULT;
 
 
 //this is a minor feature to remove all recurring \n
 //I am unsure how gcc does but mine is straightforward.
-int line_compressor(FILE *des, FILE *fp)
+int line_compressor(FILE *fp)
 {
   int lines = 0;
   char c;
 
-  while((c = fgetc(fp)) == '\n')
-    {
-      lines++;
-    }
-  if(c != EOF)
-    fputc(c, des);
   
+  while((c = fgetc(fp)) == '\n')    
+    lines++;  
+
+  if(c != EOF)
+    fseek(fp, -1, SEEK_CUR);
+
   return lines;
 }
 
 
-void spaces(FILE *fp, FILE *des)
+void space_handle(FILE *fp, FILE *des)
 { 
   fseek(fp, -3, SEEK_CUR); //should be -2...
-  
-
   char c = fgetc(fp);
+
+  //printf("%c\n", c);
   
   if(c == '\n')
     {      
-      fseek(fp, 2, SEEK_CUR);
+      fseek(fp, 1, SEEK_CUR);
       while((c = fgetc(fp)) == ' ')
-	{
+	{	  
 	  fputc(' ', des);
 	}
-      fseek(fp, -1, SEEK_CUR);
+
+      if(c != EOF)
+	fseek(fp, -1, SEEK_CUR);
       return;
     }
   
   fseek(fp, 1, SEEK_CUR);  //another weird interaction here as the offset can be 2 but the output will not change.
 
-  while(fgetc(fp) == ' '); //just advance the cursor
-  fseek(fp, -1, SEEK_CUR); 
+  while((c = fgetc(fp)) == ' '); //just advance the cursor
+
+  if(c != EOF)
+    fseek(fp, -1, SEEK_CUR); 
 }
 
-
-//what it does: once /* has been seen, it ignores the stuff until */
-int former_loop(FILE *des, char c, int space)
-{     
-  if(c == '*')
-    {
-      space++;
-      state = CLOSE_STAR;
-      /*
-      if((c=fgetc(fp)) == '/' && c != EOF)
-	{
-	  space++;
-	  for(int i = 0; i < space; i++)
-	    fprintf(des, " ");
-	  
-	  space = 2;
-	  *open = 0;
-	  return;
-	}
-      */
-      return space;
-    }
-		        
-  space++;
-  return space;
-}
 
 
 /*this is a simple quote handler unlike gcc parser
@@ -89,6 +64,7 @@ int quote_handle(FILE *fp, FILE *des)
 {
   int count = 0;
   char c;
+  
 
   while((c = fgetc(fp)) != '"' && c != EOF)
     {
@@ -101,7 +77,6 @@ int quote_handle(FILE *fp, FILE *des)
   if(c != EOF)
     fputc('"', des);
 
-
   return count;
 
 }
@@ -109,13 +84,18 @@ int quote_handle(FILE *fp, FILE *des)
 
 int main(int argc, char **argv)
 {
- 
+
+  enum states{DEFAULT=1, OPEN_SLASH, REDACT, CLOSE_STAR, NEW_LINE, STRING_LITERAL, SPACING};
+
+  int state = DEFAULT;
+
   if(argc != 3)
     {
       printf("use: parser source destination, args: %d\n", argc);
       return 1;
     }
 
+ 
   FILE *fp = fopen(argv[1], "r");
 
   if(fp == NULL)
@@ -123,21 +103,23 @@ int main(int argc, char **argv)
       printf("source file not found\n");
       return 1;
     }
+
   
-  
-  FILE *des = fopen(argv[2], "w+");
+  FILE *des = fopen(argv[2], "w");
   
   int open = 0; //flag for seeing the open quote
   char c; 
   int linum = 1; //line counter
   int loc = 0; //location for open quote
   int space = 2; //padding   
+
   
-  
-  //main loop.  
+  //main loop.
+  //The states of quote redacting machine are explicit and integrated into the control flow. Other's will behave naturally inside their functions above.
   while(!feof(fp))
     {
       c = fgetc(fp);
+
       switch(state)
 	{
 	case DEFAULT:
@@ -160,8 +142,11 @@ int main(int argc, char **argv)
 	case OPEN_SLASH:
 
 	  if(c == '*')
-	    state = REDACT;
-
+	    {
+	      state = REDACT;
+	      loc = linum;
+	      open = 1;
+	    }
 	  else if(c == '"')
 	    {
 	      fputc('/', des);
@@ -184,10 +169,8 @@ int main(int argc, char **argv)
 	    }
 	  break;
 	  
-	case REDACT:
-	  open = 1;
-	  loc = linum;
-	  if(c == '\n') //this I won't define explicitly
+	case REDACT:	  
+	  if(c == '\n')
 	    {
 	      linum++;
 	      space = 0;
@@ -215,79 +198,36 @@ int main(int argc, char **argv)
 	    {
 	      space++;	      
 	      state = REDACT;
-
 	      if(c == '\n')
-		{//likewise, these newlines are different from state NEW_LINE as they don't have to be outputted
+		{
 		  linum++;
-		  space = 0;
+		  space = 0;		  
 		}
+	    }
+	  break;
+	  
+	case NEW_LINE:
+	  fputc('\n', des);
+	  fseek(fp, -1, SEEK_CUR);
+	  linum += line_compressor(fp) + 1; 
+	  state = DEFAULT;
+	  break;
+	  
+	case STRING_LITERAL:
+	  fputc('"', des);
+	  fseek(fp, -1, SEEK_CUR);
+	  linum += quote_handle(fp, des);
+	  state = DEFAULT;
 	  break;
 
-	case NEW_LINE:
-	  
-
-
-
-
-
-
-      /*
-      if((c=fgetc(fp)) == '"' && !open)
-	{
-	  fputc(c, des);
-	  linum += quote_handle(fp, des);
+	case SPACING:	  
+	  fputc(' ', des);	  
+	  space_handle(fp, des);
+	  state = DEFAULT;
+	  break;
 	}
-      
-      else if(c == '/')
-	{	  
-	  if((c=fgetc(fp)) == '*')
-	    {
-	      open = 1;
-	      loc = linum;
-	      linum += inner_loop(fp, des, &open);     
-	    }
-	  else if(c == '"' && !open)
-	    {//since I call fgetc above
-	      fputc(c, des);
-	      linum += quote_handle(fp, des);
-	    }
-	  else if(c == '\n')
-	    {
-	      linum++;
-	      fputc('/', des);
-	      fputc('\n', des);
-	      linum += line_compressor(des, fp);
-	    }
+    }    
 
-	  else if(c == ' ')
-	    {
-	      fputc(' ', des);
-	      spaces(fp, des);
-	    }
-	  
-	  else if(c != EOF && c != '\n')
-	    {
-	      fputc('/', des);
-	      fputc(c, des);
-	    }
-	}
-      else if(c == ' ')
-	{
-	  fputc(' ', des);
-	  spaces(fp, des);
-	}
-      
-      else if(c == '\n')
-	{
-	  linum++;
-	  fputc('\n', des);
-	  linum += line_compressor(des, fp);	  
-	}
-      else
-	fputc(c, des);
-    
-      */
-    }
 
   fclose(fp);
   fprintf(des, "\n"); //padding as done by gcc -E

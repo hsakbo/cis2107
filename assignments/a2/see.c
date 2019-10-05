@@ -5,14 +5,14 @@ int main(int argc, char **argv)
 {
   awdnuaiolwkudb       hnoauwdhauoida;
     awdolinaow
-  /**"/*uywbdia*
+  *"/*uywbdia*
   if(argc != 3)
     {
       printf("use: parser source destination, args: %d\n", argc);
       return 1;
       }/
     /*
-
+"
   /*
   FILE *fp = fopen(argv[1], "r");
 
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	fputc(c, des);
     }
 */
-  /*    
+  
   if(open == 1)
     printf("Error, mismatched quotes"");
 

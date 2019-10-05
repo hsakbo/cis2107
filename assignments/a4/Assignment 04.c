@@ -186,7 +186,6 @@ unsigned int add(unsigned int i, unsigned int j)
   //took me about 5 minutes to figure it out.
   //please explain how it works... I only got it empirically changing stuff here and there.
 
-  //hah! I beat the 8-line man. although, the add function has 17 lines..
 
 unsigned int sub(unsigned int i, unsigned int j) 
 { 
@@ -219,9 +218,7 @@ unsigned int mul(unsigned int i, unsigned int j)
    one half-nybble at a time */
 void print_half_nybbles(unsigned int x) 
 {
-  unsigned int first = ~0; //~(~0 >> 1);
-  first = first >> 1;
-  first = ~first;
+  unsigned int first = ~(~0u >> 1);
   unsigned int second = first>>1;
   for(int i = 0; i < mul(sizeof(int), 8); i=add(i, 2))
     {
@@ -254,6 +251,8 @@ unsigned int reverse_half_nybbles(unsigned int i)
       ret = ret|(i&3);      
       i = i>>2;
     }
+
+  print_half_nybbles(ret);
   
   return ret;
 }
@@ -279,7 +278,6 @@ int has_odd(unsigned int x)
 {
   int ones = 0;
   //only need to check either 0s or 1s, the other follows
-  print_half_nybbles(x);
   for(int i = 0; i < mul(sizeof(int), 8); i=add(i, 1))
     {
       if(x&1)
@@ -298,8 +296,7 @@ int has_odd(unsigned int x)
    bit modified so that there is an odd number of 1s. */
 unsigned int make_odd(unsigned int x) 
 {
-  unsigned int sig = ~0;
-  sig = ~(sig>>1);
+  unsigned int sig = ~((~0u)>>1);
   if(!has_odd(x))
     {
       if((x&sig) == sig)
