@@ -36,11 +36,9 @@ void print_msg(FILE *fp, int size)
       c = 0;
       for(int j = 0; j < 8; j++)
 	{
-	  
 	  if(fgetc(fp)&1)
-	    {
-	      c = c|mask;
-	    }
+	    c = c|mask;
+	    
 	  mask = mask>>1;	  
 	}
       printf("%c", c);

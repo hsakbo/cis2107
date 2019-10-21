@@ -1,0 +1,28 @@
+This program is not nice because I challenged myself to code it as fast as possible.
+
+I am sad that I could not finish it in the time you said it would (3 hours), but it was faster than usual.
+
+My program is not organised but I shall explain what is going on.
+It is alot simple than the fuss created by the one who created the assignment.
+
+2 files: encode.c and decode.c
+
+usage: encode File_name.ppm "message you want"
+       decode File_name.ppm
+
+encode and decode do not betray their names in terms of functionality.
+
+inside encode there is the main function, a function called validity_bool and hide.
+
+inside the main I prepare the output file and open all the file ptrs.
+validity_bool is like my preprocessor\parser. it will first check if it is a valid ppm file as described in the assignment. then it will check if the proper height and width is there to encode the message. if not it will simply return and exit the application.
+
+The validity_bool also prints out a copy of the source file to output. it will not change anything except remove the ONE comment (singular here, thus I have not considered multiple comments but that is ok according to the q).
+
+hide function does it all. It will first encode the length of the string to the LAST 8 bytes. Then, tt will encode the actual message at the beginning pixels. (I have assumed no comments).
+
+I had imaginative ways in hiding this mesage (encryption, hashing) buut, my work would be too shabby and useless in the much wider aspect of things.
+
+
+
+the decode.c will be similarly comprised of main function that handles the basics, get size() function to get the length of the string from the 8 bytes near EOF. and a print_msg function to print the message after decoding it using bitwise operations.
