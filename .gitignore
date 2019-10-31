@@ -1,2 +1,5 @@
 books
 text
+*.ppm
+*.jpeg
+exe

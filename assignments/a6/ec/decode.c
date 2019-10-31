@@ -2,6 +2,26 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+void set_cursor(FILE *fp)
+{
+  fseek(fp, 3, SEEK_SET);
+  int count = 0;
+  char c = 0;
+  while(count<3)
+    {
+      if(fgetc(fp) == '#')
+	while(fgetc(fp) != 0xA);
+      
+      else
+	{
+	  count++;
+	  while((c = fgetc(fp)) != 0xA && c != ' ');
+	}
+    }
+
+}
+
 int get_size(FILE *fp)
 {
   fseek(fp, -8, SEEK_END);
@@ -15,7 +35,6 @@ int get_size(FILE *fp)
     }
 
   unsigned char mask = 128;
-
   for(int i = 0; i < 8; i++)
     {
       if(arr[i]&1)
@@ -30,10 +49,8 @@ int get_size(FILE *fp)
 
 void print_msg(FILE *fp, int size)
 {
-  fseek(fp, 3, SEEK_SET);
-  for(int i = 0; i < 2; i++)
-    while(fgetc(fp) != 0x0A);
 
+  set_cursor(fp);
   unsigned char c;
   unsigned char mask;
   for(int i = 0; i < size; i++)
@@ -55,8 +72,7 @@ void print_msg(FILE *fp, int size)
 int get_img_size(FILE *fp)
 {
   fseek(fp, -24, SEEK_END);
-  char arr[25];
-  arr[24] = 0;
+  char arr[24];
   for(int i = 0; i < 24; i++)
     arr[i] = fgetc(fp);
 
@@ -69,12 +85,33 @@ int get_img_size(FILE *fp)
   return retval;
 }
 
+void print_file(FILE *fp, FILE *des, int size)
+{
+  set_cursor(fp);
+  unsigned char c;
+  unsigned char tmp;
+  for(int i = 0; i < size; i++)
+    {
+      c = 0;
+      for(int j = 0; j < 4; j++)
+	{
+	  fseek(fp, 1, SEEK_CUR);	  
+	  tmp = fgetc(fp)&3;
+	  tmp = tmp<<(6-2*j);	  
+	  c = c|tmp;
+	  
+	}
+      
+      fputc(c, des);
+    }
+}
+
 void handle_file(char *src, char *dest)
 {
   FILE *fp = fopen(src, "r");
   FILE *des = fopen(dest, "w+");
   int len = get_img_size(fp);
-  printf("%d\n", len);
+  print_file(fp, des, len);
 }
 
 int main(int argc, char **argv)

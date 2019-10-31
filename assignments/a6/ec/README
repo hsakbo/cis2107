@@ -1,0 +1,56 @@
+files encode.c and decode.c are what their names suggests us.
+first compile, I will assume encode.c is encode and decode.c is decode
+
+usage:
+	./encode IMAGE "some string"
+	./decode IMAGE
+
+extra credits: (-p16 and -f are source file indicator)
+
+      ./encode -p16 smallerImage LargerImage (extensively tested)
+      ./encode LargerImage -p16 smallerImage (tested but on earlier iterations)
+      ./decode -f IMAGE outputName	     (extensively tested)
+      ./decode outputName -f IMAGE	     (tested but on earlier iterations)
+      
+
+The maximum size for the source file to be encoded is 16mb. thus, the larger image should be smaller than ~128mb.
+
+As stated for extra-creds the encoding will also be done to a 16bit image but the normal one is 8bit image.
+
+encode.c:
+	set_cursor(FILE *) will jump to the image data of the ppm file skipping
+	any comments and the header.
+
+	int validity_bool(...) checks if the beginning of the file is P6.
+	Then it will determine the size of the file to be encoded and check if
+	it has enough bytes to encode either the image or string
+	if the file is large enough to hold the data, it will make a copy of
+	the file to be encoded.
+
+	void hide(...) hides the string
+
+	void hide_image(...) hides the image
+
+	int pic_encode(char *src, char *des) is my pseudomain for extra credits.
+	This handles the initialization of file ptrs and the logic for creating
+	output file and calling other functions to handle encoding.
+
+	int main(...) main function will handle the cmdline arguments and is
+	the pic_encode(...) for normal strings.
+
+decode.c:
+	set_cursor(fp) is the same as encode.c
+
+	int get_size(FILE *fp) will produce size for normal usage for strings
+
+	void print_msg(FILE *fp, int size) prints to stdout after decoding
+
+	int get_img_size(FILE *fp) returns size of e.c. file
+
+	void print_file(...) decodes and outputs the content to the destination
+
+	void handle_file(...) pseudomain for the e.c., handles files and calls
+	relevant functions
+
+	int main(..) handles the arguments and is the main for normal usage.
+	handles files and calls relevant functions.

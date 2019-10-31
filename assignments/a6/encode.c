@@ -5,7 +5,7 @@
 int validity_bool(FILE *fp, int char_len, FILE *des)
 {
   
-  if((fgetc(fp) != 0x50) && (fgetc(fp) != 0x36))
+  if((fgetc(fp) != 0x50) || (fgetc(fp) != 0x36))
      return 0;
   
   fseek(fp, 1, SEEK_CUR);
@@ -79,7 +79,7 @@ void hide(FILE *fp, char *str, FILE *des)
 	    c = c|1;
 	    
 	  else
-	    c = c&(~one);
+	    c = c&(~one); //11111110
 	    
 	  fseek(des, -1, SEEK_CUR);
 	  fputc(c, des);

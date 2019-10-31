@@ -9,7 +9,7 @@
 int line_compressor(FILE *fp)
 {
   int lines = 0;
-  char c;
+  int c;
 
   
   while((c = fgetc(fp)) == '\n')    
@@ -25,7 +25,7 @@ int line_compressor(FILE *fp)
 void space_handle(FILE *fp, FILE *des)
 { 
   fseek(fp, -3, SEEK_CUR); //should be -2...
-  char c = fgetc(fp);
+  int c = fgetc(fp);
 
   //printf("%c\n", c);
   

@@ -1,0 +1,2 @@
+objdump -d will create assembly from binary
+strace to analyze syscalls called by an executable

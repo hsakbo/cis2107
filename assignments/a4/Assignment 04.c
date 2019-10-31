@@ -16,6 +16,8 @@ unsigned int add(unsigned int, unsigned int);
 unsigned int sub(unsigned int, unsigned int);
 unsigned int mul(unsigned int, unsigned int);
 
+unsigned int add1(unsigned int, unsigned int);
+
 void print_half_nybbles(unsigned int);
 unsigned int reverse_half_nybbles(unsigned int);
 
@@ -47,7 +49,7 @@ int main(int argc, char **argv)
   weatherlog_t log_entry;
 
 
-  
+  /*
   printf("Enter an integer: ");
   scanf("%u", &i);
   printf("Enter another integer: ");
@@ -57,7 +59,7 @@ int main(int argc, char **argv)
   printf("Please enter a positive integer: ");
   scanf("%d", &y);
 
-  printf("i + j = %u\n", add(i,j));
+  printf("i + j = %u\n", add1(i,j));
   printf("i - j = %u\n", sub(i,j));
   printf("i * j = %u\n", mul(i,j));
 
@@ -81,7 +83,7 @@ int main(int argc, char **argv)
   
   printf("%x with reversed half-nybbles is %x\n", x, reverse_half_nybbles(x));
 
-  
+  */
   printf("Enter a year: ");
   scanf("%u", &year);
   
@@ -175,10 +177,15 @@ unsigned int my_first_add(unsigned int i, unsigned int j)
 //only took a few hours to arrive to this conclusion, 2 lines
 unsigned int add(unsigned int i, unsigned int j)
 {
-  //I've seen these if statements in the linux community.
+  //I've seen these if statements in the linux community.a+b
   if(!(i&j))   return i^j;  
   
   return add(i^j, (i&j)<<1);
+}
+
+unsigned int add1(unsigned int i, unsigned int j)
+{
+  return ~sub(~i, j);
 }
 
 
@@ -323,7 +330,7 @@ weatherlog_t pack_log_entry(unsigned int year, unsigned int month, unsigned int 
   weatherlog_t ret = 0;
 
   //year -6bits
-  ret = ret|(year&63);
+  ret = ret|year;
 
   //month-4bits
   ret = ret<<4;

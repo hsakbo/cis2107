@@ -3,41 +3,54 @@
 #include <string.h>
 #include <stdlib.h>
 
-int validity_bool(FILE *fp, int char_len, FILE *des)
+
+void set_cursor(FILE *fp)
+{
+  fseek(fp, 3, SEEK_SET);
+  int count = 0;
+  char c;
+  while(count<3)
+    {
+      if(fgetc(fp) == '#')
+	while(fgetc(fp) != 0xA);
+      
+      else
+	{
+	  count++;
+	  while((c = fgetc(fp)) != 0xA && c != ' ');
+	}
+    }
+}
+
+
+int validity_bool(FILE *src, int size, FILE *des)
 {
   
-  if((fgetc(fp) != 0x50) || (fgetc(fp) != 0x36))
-     return 0;
+  if((fgetc(src) != 0x50) || (fgetc(src) != 0x36))
+      return 0;
+    
+  set_cursor(src);
+ 
+  unsigned long start = ftell(src);
+  fseek(src, 0, SEEK_END);
+  unsigned long end = ftell(src);
+  unsigned long bytes = end - start;
+  fseek(src, 0, SEEK_SET);  
+  unsigned long mult = size;
+
+  //printf("bytes: %ld\nmult: %ld\n", bytes, mult);
   
-  fseek(fp, 1, SEEK_CUR);
-  if(fgetc(fp) == '#')
-    while(fgetc(fp) != 0xA);
-
-  else
-    fseek(fp, -1, SEEK_CUR);
-
-  int width = 0;
-  fscanf(fp, "%d", &width);
-  
-
-  int height = 0;
-  fscanf(fp, "%d", &height);
-
-
-  if(height*width < 8+(char_len*8))
+  if(bytes < 24+(mult*8))
     return 0;
-
-  //assuming 255
-  fseek(fp, 4, SEEK_CUR);
-
-  fprintf(des, "P6\n%d %d\n255", width, height);
+ 
   int ch;
-  while((ch = fgetc(fp)) != EOF)
+  while((ch = fgetc(src)) != EOF)
     {
       fputc(ch, des);
     }
-
+  
   return 1;
+  
 
 }
 
@@ -67,13 +80,9 @@ void hide(FILE *fp, char *str, FILE *des)
 	fputc(arr[i] & (~one), des);	
       mask1 = mask1 >> 1;
     }
+
+  set_cursor(des);
   
-  fseek(des, 3, SEEK_SET);
-  for(int i = 0; i < 2; i++)    
-    while(fgetc(des) != 0xA);
-
- 
-
   char c = 0;
   for(int i = 0; i < strlen(str); i++)
     {
@@ -95,46 +104,6 @@ void hide(FILE *fp, char *str, FILE *des)
     }
 }
 
-
-
-int img_prep(FILE *src, FILE *des, int size)
-{
-  
-  
-
-  if((fgetc(src) != 0x50) || (fgetc(src) != 0x36))
-     return 0;
-
-  
-  fseek(src, 1, SEEK_CUR);
-  if(fgetc(src) == '#')
-    while(fgetc(src) != 0xA);
-
-  else
-    fseek(src, -1, SEEK_CUR);
-  
-  int width = 0;
-  fscanf(src, "%d", &width);
-  
-
-  int height = 0;
-  fscanf(src, "%d", &height);
-  
-  if(height*width < 24+(size*8))
-    return 0;
-
-  fseek(src, 6, SEEK_CUR);
-
-  fprintf(des, "P6\n%d %d\n65535", width, height);  
-  int ch;
-  while((ch = fgetc(src)) != EOF)
-    {
-      fputc(ch, des);
-    }
-  
-  return 1;
-}
-
 void hide_img(FILE *des, FILE *read, unsigned int size)
 {
   
@@ -143,10 +112,9 @@ void hide_img(FILE *des, FILE *read, unsigned int size)
   unsigned char c = 0;
 
   
-  
   for(int i = 0; i < 12; i++)
     {
-      temp = size<<(12+2*i);
+      temp = size<<(8+2*i);
       temp = temp>>30;
       
       fseek(des, 1, SEEK_CUR);
@@ -159,11 +127,7 @@ void hide_img(FILE *des, FILE *read, unsigned int size)
 
   
   rewind(read);
-  fseek(des, 3, SEEK_SET);
-  for(int i = 0; i < 2; i++)
-    while(fgetc(des) != 0xA);
-
- 
+  set_cursor(des);
   
   unsigned char tmp = 0;
   unsigned char mask;
@@ -221,7 +185,7 @@ int pic_encode(char *src, char *des)
   fseek(read, 0, SEEK_END);
   unsigned int size = (unsigned int) ftell(read);
 
-  if(img_prep(fp, desF, size))
+  if(validity_bool(fp, size, desF))
     {
       hide_img(desF, read, size);
       
