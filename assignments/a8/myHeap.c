@@ -7,6 +7,7 @@
 /* mprotect needs memory alignment. */
 /* which means a power of 2 and multiple of size(void*) */
 /* this goes along with fixing all ints to longs */
+/* repair the 4 byte integer assumption error */
 
 #include <unistd.h>
 #include <sys/mman.h>
@@ -96,7 +97,7 @@ extern void *s_malloc(unsigned int size)
   int *ret = (int*) find_loc(d_size);
 
   if(ret != NULL)
-    return splitter(ret, d_size);
+    return splitter((char*)ret, d_size);
       
   char *koubi = (char*) tail;
   if(heap_size - (tail-head) >= d_size)
@@ -134,7 +135,7 @@ extern void s_free(void *addr)
   int *int_m = (int*) mid;
   int *int_l = (int*) lower;
   
-  if(mid > head)
+  if((void*)mid > head)
     {
       delta_up = *((int*) (mid-4)) & (~7u);
       upper = (char*) (mid - delta_up);
@@ -144,7 +145,7 @@ extern void s_free(void *addr)
     }
 
   char *end_tag = NULL;
-  if(lower < tail && !(*int_l & 1))
+  if((void*)lower < tail && !(*int_l & 1))
     {
       state += 2;
       delta_down = *int_l & (~7u);
@@ -227,7 +228,7 @@ extern void init_heap(unsigned int max)
       *init = __THRESHOLD__ + 8;
       int macro_safety = __THRESHOLD__ / 4 + 1;
       *(init+macro_safety) = 72;
-      heap_size = max;
+      heap_size = mult;
       tail = init + macro_safety + 1;      
     }
 }

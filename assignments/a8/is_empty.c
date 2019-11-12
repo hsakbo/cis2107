@@ -1,4 +1,4 @@
-
+#include <stddef.h>
 extern int is_empty(char *s1)
 {
   if(s1 == NULL)

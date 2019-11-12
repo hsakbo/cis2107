@@ -1,4 +1,3 @@
-
 extern void capitalize(char *s1)
 {
   while(*s1 != 0)

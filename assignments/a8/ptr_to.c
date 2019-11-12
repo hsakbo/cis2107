@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 extern char *ptr_to(char *h, char *n)
 {
   int count = 0;

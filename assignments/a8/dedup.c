@@ -1,12 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
+#ifdef __linux__
 #include "my_headers.h"
 
 
 extern char *dedup(char *s)
 {
   int len = 0;
-  init_heap(1000);
+  
   while(*s != 0)
     {
       len++;
@@ -14,7 +13,8 @@ extern char *dedup(char *s)
     }
   s -= len;
 
-  char *ret = (void*) s_malloc(sizeof(char)*len +1);
+  init_heap(len * 2 + 100);
+  char *ret = (char*) s_malloc(sizeof(char)*len +1);
   
   char map[128][1];
 
@@ -38,8 +38,10 @@ extern char *dedup(char *s)
   
 }
 
+#else
+#include <stdlib.h>
 
-extern char *boring_dedup(char *s)
+extern char *dedup(char *s)
 {
   int len = 0;
   //init_heap(1000);
@@ -72,5 +74,4 @@ extern char *boring_dedup(char *s)
   return ret-unique;  
 }
 
-
-
+#endif
