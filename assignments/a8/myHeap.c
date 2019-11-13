@@ -8,7 +8,7 @@
 /* which means a power of 2 and multiple of size(void*) */
 /* this goes along with fixing all ints to longs */
 /* repair the 4 byte integer assumption error */
-
+#ifdef __linux__
 #include <unistd.h>
 #include <sys/mman.h>
 #include <fcntl.h>
@@ -264,3 +264,4 @@ int main()
 }
 
 */
+#endif

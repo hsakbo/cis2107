@@ -52,7 +52,7 @@ extern char *dedup(char *s)
     }
   s -= len;
 
-  char *ret = (void*) malloc(sizeof(char)*len +1);
+  char *ret = (char*) malloc(sizeof(char)*len +1);
   
   char map[128][1];
 
