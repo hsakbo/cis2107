@@ -1,9 +1,6 @@
 #include <errno.h>
 #include <stddef.h>
 
-#ifdef __linux__
-#include "my_headers.h"
-
 static int multi(int sLen, int d)
 {
   int ret = 2;
@@ -13,6 +10,11 @@ static int multi(int sLen, int d)
     }
   return ret;
 }
+
+
+
+#ifdef __linux__
+#include "my_headers.h"
 
 extern char *pad(char *s1, int d)
 {

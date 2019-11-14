@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 static void export(char *src, int offset, char *des)
 {
   for(int i = 0; i < offset; i++)
@@ -95,16 +97,3 @@ extern char **str_chop_all(char *s, char c)
   return fin;
 }
 #endif
-
-int main()
-{
-  char c[] = "I am a teddy bear  wink";  
-  char **ret = str_chop_all(c, ' ');
-
-  for(int i = 0; ret[i] != NULL; i++)
-    {
-      printf("%s\n", ret[i]);
-    }
-  
-  return 0;
-}
