@@ -44,7 +44,7 @@ static int str_len(char *s)
 }
 
 #ifdef __linux__
-#include "my_headers.h"
+#include "../my_headers.h"
 
 extern char *replace(char *s, char *pat, char *rep)
 {

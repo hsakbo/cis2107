@@ -14,7 +14,7 @@ static int multi(int sLen, int d)
 
 
 #ifdef __linux__
-#include "my_headers.h"
+#include "../my_headers.h"
 
 extern char *pad(char *s1, int d)
 {

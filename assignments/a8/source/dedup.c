@@ -1,6 +1,6 @@
 #include <stddef.h>
 #ifdef __linux__
-#include "my_headers.h"
+#include "../my_headers.h"
 
 
 extern char *dedup(char *s)

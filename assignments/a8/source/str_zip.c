@@ -1,6 +1,5 @@
-#include <stdio.h>
 #ifdef __linux__
-#include "my_headers.h"
+#include "../my_headers.h"
 
 extern char *str_zip(char *s1, char *s2)
 {
@@ -103,10 +102,3 @@ extern char *str_zip(char *s1, char *s2)
 
 
 #endif
-
-
-int main()
-{
-  printf("%s\n", str_zip("hello", "WORLD!"));
-  kaijo();
-}

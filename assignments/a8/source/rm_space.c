@@ -1,4 +1,4 @@
-#include "my_headers.h"
+#include "../my_headers.h"
 
 void rm_space(char *s)
 {

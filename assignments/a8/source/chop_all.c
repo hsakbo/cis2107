@@ -11,7 +11,7 @@ static void export(char *src, int offset, char *des)
 
 
 #ifdef __linux__
-#include "my_headers.h"
+#include "../my_headers.h"
 
 extern char **str_chop_all(char *s, char c)
 {

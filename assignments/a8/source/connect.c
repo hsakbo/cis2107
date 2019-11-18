@@ -15,7 +15,7 @@ static int memlength(char **strs, int n)
 }
 
 #ifdef __linux__
-#include "my_headers.h"
+#include "../my_headers.h"
 extern char *str_connect(char **strs, int n, char c)
 {
   int len = memlength(strs, n);

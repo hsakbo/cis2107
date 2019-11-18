@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include "my_headers.h"
-#include <stdlib.h>
+#ifdef __linux__
+#include "../my_headers.h"
+
 
 extern char *repeat(char *s, int x, char sep)
 {
@@ -31,8 +31,10 @@ extern char *repeat(char *s, int x, char sep)
   return fin;
 }
 
+#else
+#include <stdlib.h>
 
-extern char *boring_repeat(char *s, int x, char sep)
+extern char *repeat(char *s, int x, char sep)
 {
   if(s == NULL)
     return NULL;
@@ -61,3 +63,5 @@ extern char *boring_repeat(char *s, int x, char sep)
   *(ret-1) = 0;
   return fin;
 }
+
+#endif
