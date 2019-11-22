@@ -1,0 +1,27 @@
+#reverse.sim4 - Input n integers and output them in reverse order
+000 8001      start: in      %r1        n = read();            
+001 5020             ld      $array     %r2 points to array    
+002 9002             mov     %r0,%r2                           
+003 9013             mov     %r1,%r3    for (i=n; i!=0; --i)  
+004 7203      inlp:  skne    %r3        {                      
+005 6011             jmp     loop2                             
+006 8403             dec     %r3                               
+007 8004             in      %r4          array[%r2] = read(); 
+008 9242             mov     %r4,(%r2)                         
+009 8302             inc     %r2          %r2++                
+010 6004             jmp     inlp       }                      
+011 9013      loop2:  mov     %r1,%r3    for (i=n; i!=0; --i)  
+012 7203      outlp: skne    %r3        {                     
+013 6019             jmp     done                             
+014 8403             dec     %r3                              
+015 8402             dec     %r2        %r2--;                
+016 9124             mov     (%r2),%r4  write() = array[%r2]; 
+017 8104             out     %r4                              
+018 6012             jmp     outlp      }                     
+019 0000      done:  halt               return;               
+020 0000      array: .=.+100            int array[100];       
+000                  .end    start                           
+3
+10
+20
+30

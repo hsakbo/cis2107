@@ -1,0 +1,24 @@
+#readv2.sim3 Read n integers and print the sum */
+000 8000          start: in                read(n);                         
+001 2016                 st      n                                          
+002 8200                 clr               sum = 0;                         
+003 2017                 st      sum                                        
+004 1016          loop:  ld      n         for (; n>0; n--)                 
+005 7200                 skne              {                                
+006 6013                 jmp     done                                       
+007 8400                 dec                                                
+008 2016                 st      n                                          
+009 8000                 in                sum = sum + read();              
+010 3017                 add     sum                                        
+011 2017                 st      sum                                        
+012 6004                 jmp     loop      }                                
+013 1017          done:  ld      sum       print(sum);                      
+014 8100                 out                                                
+015 0000                 halt              exit(0);                         
+016 0000          n:     .word             int n;                           
+017 0000          sum:   .word             int sum;                         
+000
+3
+10
+20
+30

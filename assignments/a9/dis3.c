@@ -15,6 +15,7 @@
 #define LDA        5          /* load address                   */
 #define JMP        6          /* jump (branch) to address       */
 #define SKIPSET    7          /* skip instructions              */
+#define ACCSET     8          /* accumulator instructions       */
 
 /* SIM2 skip operation codes with format 7n0r where r is a general    */
 /* register and n is as follows:                                      */
@@ -26,6 +27,19 @@
 #define SKGE       4          /* skip if acc greater or equal to  0   */
 #define SKLT       5          /* skip if acc less than 0              */
 #define SKLE       6          /* skip if acc less than or equal to 0  */
+
+
+/* accumulator operation codes (format 8n00, where n is as follows)   */
+#define IN         0          /* input a 4-digit number into acc      */
+#define OUT        1          /* output the 4-digit number from acc   */
+#define CLR        2          /* clear the acc (acc = 0)              */
+#define INC        3          /* increment (add 1) to the acc         */
+#define DEC        4          /* decrement (subtract 1) from the acc  */
+#define NEG        5          /* negate the number in acc             */
+#define SHFTL      6          /* shift acc left (acc=acc*10)          */
+#define SHFTR      7          /* shift acc right (acc=acc/10)         */
+
+
 #define R0 0       /* accumulator, eax */
 /* #define R1 1       /\* ebx *\/ */
 /* #define R2 2       /\* ecx *\/ */
@@ -50,6 +64,7 @@ void disas_data(int);
 void gen_labels();
 int uniqueL(int);
 void handle_skip(int, char*);
+void handle_regs(int, char*);
 
 //my symbol table
 typedef struct sym_list
@@ -191,7 +206,6 @@ void gen_symbols(int max)
       phead = node;
       addr++;
     }
-
 }
 
 int load()
@@ -204,7 +218,6 @@ int load()
   
   for (int i = 0; i < MEMSIZE; i++)
     memory[i] = 0;
-
   
   while (fgets(line, MAXLINE, stdin) > 0)
     {
@@ -227,8 +240,7 @@ int load()
 	  else
 	    {
 	      memory[max] = addr;
-	      return max;
-	     
+	      return max;  
 	    }
 
 	case 2:
@@ -244,7 +256,6 @@ int load()
 	    }
 	  memory[addr] = val;
 	  max++;
-	  
   	}
 
     }
@@ -278,33 +289,75 @@ void handle_skip(int val, char *label)
   switch (det)
     {
     case SKIP:
-      printf(" %-10sskip\n", label);
+      printf("%-10sskip\n", label);
       return;
       
     case SKEQ:
-      printf(" %-10sskeq, %%eax\n", label);
+      printf("%-10sskeq, %%eax\n", label);
       return;
       
     case SKNE:
-      printf(" %-10sskne, %%eax\n", label);
+      printf("%-10sskne, %%eax\n", label);
       return;
       
     case SKGT:
-      printf(" %-10sskgt, %%eax\n", label);
+      printf("%-10sskgt, %%eax\n", label);
       return;
 
     case SKGE:
-      printf(" %-10sskne, %%eax\n", label);
+      printf("%-10sskne, %%eax\n", label);
       return;
 
     case SKLT:
-      printf(" %-10ssklt, %%eax\n", label);
+      printf("%-10ssklt, %%eax\n", label);
       return;
 
     case SKLE:
-      printf(" %-10sskle, %%eax\n", label);
+      printf("%-10sskle, %%eax\n", label);
       return;
     }
+}
+
+void handle_regs(int val234, char *label)
+{
+  int det = val234 / 100;
+
+  switch (det)
+    {
+    case IN:
+      printf("%-10sin, %%eax\n", label);
+      return;
+
+    case OUT:
+      printf("%-10sout, %%eax\n", label);
+      return;
+
+    case CLR:
+      printf("%-10sclr, %%eax\n", label);
+      return;
+
+    case INC:
+      printf("%-10sinc, %%eax\n", label);
+      return;
+
+    case DEC:
+      printf("%-10sdec, %%eax\n", label);
+      return;
+
+    case NEG:
+      printf("%-10sneg, %%eax\n", label);
+      return;
+
+    case SHFTL:
+      printf("%-10sshftl, %%eax\n", label);
+      return;
+
+    case SHFTR:
+      printf("%-10shftr, %%eax\n", label);
+      return;
+    }
+
+  
 }
 
 void disas_program(int addr)
@@ -359,33 +412,37 @@ void disas_program(int addr)
   switch (val1)
     {
     case HALT:
-      printf(" %-10shalt\n", label);
+      printf("%-10shalt\n", label);
       return;
 
     case LD:
-      printf(" %-10sld, %s\n", label, name);
+      printf("%-10sld, %s\n", label, name);
       return;
 
     case ST:
-      printf(" %-10sst, %s\n", label, name);
+      printf("%-10sst, %s\n", label, name);
       return;
 
     case ADD:
-      printf(" %-10sadd, %s\n", label, name);
+      printf("%-10sadd, %s\n", label, name);
       return;
       
     case SUB:
-      printf(" %-10ssub, %s\n", label, name);
+      printf("%-10ssub, %s\n", label, name);
       return;
 
     case LDA:
-      printf(" %-10slda, %d\n", label, val234);
+      printf("%-10slda, %d\n", label, val234);
       return;
 
     case SKIPSET:
       handle_skip(val234, label);
       return;
 
+    case ACCSET:
+      handle_regs(val234, label);
+      return;
+      
     case JMP:
       pHeadL = headL;
       char *loc;
@@ -399,9 +456,9 @@ void disas_program(int addr)
 	  pHeadL = pHeadL->next;
 	}
       if (label == NULL)
-	printf("          jmp, %s\n", loc);
+	printf("         jmp, %s\n", loc);
       else
-	printf(" %-10sjmp, %s\n", label, loc);
+	printf("%-10sjmp, %s\n", label, loc);
       return;
       
     default:

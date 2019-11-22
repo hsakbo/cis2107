@@ -1,0 +1,17 @@
+#   mult.sim4 - Read 2 integers and print their product 
+    000 8001        start: in     %r1         r1 = read();        
+    001 8002               in     %r2         r2 = read();        
+    002 5007               ldi    mult        r0 = mult(r1,r2);   
+    003 9008               mov    %r0,%r8                         
+    004 9389               exch   %r8,%r9                         
+    005 8100               out    %r0         out() = r0;         
+    006 0000               halt               return;             
+    007 8200        mult:  clr    %r0         r0 = 0;             
+    008 7201        loop:  skne   %r1         if (r1==0)          
+    009 9089               mov    %r8,%r9       return;           
+    010 9420               add    %r2,%r0     r0 = r0 + r2;       
+    011 8401               dec    %r1         r1--;               
+    012 6008               jmp    loop        goto loop;          
+    000                    .end   start                          
+    3
+    4

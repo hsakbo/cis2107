@@ -1,0 +1,14 @@
+#sum1to10.sim4 -  Sum the integers from 1 to 10 
+000 8201    start: clr    %r1         %r1 = 0;                   
+001 5010           lda    10          for (%r2=10;%r2!=0;%r2--)  
+002 9002           mov    %r0,%r2     {                          
+003 7202    loop:  skne   %r2                                    
+004 6008           jmp    done                                   
+005 9421           add    %r2,%r1       %r1=%r1+%r2;             
+006 8402           dec    %r2                                    
+007 6003           jmp    loop        }                          
+008 9010    done:  mov    %r1,%r0     sum = %r1;                 
+009 2011           st     sum                                    
+010 0000           halt               return;                    
+011 0000   sum:    .word              int sum;                   
+000                .end    start                                 

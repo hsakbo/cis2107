@@ -1,0 +1,18 @@
+#addn.sim4, Read n integers and print the sum 
+000 8001        start: in     %r1         n = read();         
+001 8202               clr    %r2         sum = 0;            
+002 9013               mov    %r1,%r3     for (i=n; i==0; --i)
+003 7203        loop:  skne   %r3         {                   
+004 6009               jmp    done                            
+005 8403               dec    %r3                             
+006 8004               in     %r4           sum=sum+read();   
+007 9442               add    %r4,%r2                         
+008 6003               jmp    loop        }                   
+009 8102        done:  out    %r2         print(sum)          
+010 0000               halt               return              
+000                    .end    start                          
+3
+10
+20
+30
+

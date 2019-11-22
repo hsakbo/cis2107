@@ -1,0 +1,16 @@
+#readv1.sim3 Read 2 integers and print the sum */
+000 8000          start: in                read(a);            
+001 2009                 st      a                             
+002 8000                 in                read(b);            
+003 2010                 st      b                             
+004 1009                 ld      a         sum = a + b;
+005 3010                 add     b         
+006 2011                 st      sum                           
+007 8100                 out               print(sum);
+008 0000                 halt              exit(0);            
+009 0000          a:     .word             int a;              
+010 0000          b:     .word             int b;              
+011 0000          sum:   .word             int sum;            
+000                      .end    start
+10
+20
