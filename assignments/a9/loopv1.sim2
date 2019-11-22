@@ -1,0 +1,20 @@
+loopv1.sim2 - Sum the integers from 1 to 4 using a loop
+000 5000;          start:  ldi     0         sum = 0;                    
+001 2015;                  st      sum                                   
+002 5004;                  ldi     4         for (cnt=4; cnt>0; cnt--)   
+003 2016;                  st      cnt       {                           
+004 5001;                  ldi     1                                     
+005 2017;                  st      one                                   
+006 1015;           loop:  ls      sum         sum = sum + cnt;          
+007 3016;                  add     cnt                                   
+008 2015;                  st      sum                                   
+009 1016;                  ld      cnt                                   
+010 4017;                  sub     one                                   
+011 2016;                  st      cnt                                   
+012 7100;                  skeq                                          
+013 6006;                  jmp     loop      }                           
+014 0000;                  halt              exit(0)                     
+015 0000;           sum:   .word             int cnt;                    
+016 0000;           cnt:   .word             int sum;                    
+017 0000;           one:   .word                                         
+000                        .end    start                   

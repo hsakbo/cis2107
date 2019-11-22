@@ -1,0 +1,14 @@
+#addv3.sim1 - Initialize A and B, and compute C as the sum           
+#MACHINE LANGUAGE   ASSEMBLY LANGUAGE           HIGH LEVEL LANGUAGE 
+000 5123            start:  ldi      123        a = 123;            
+001 2008                    st       a                              
+002 5456                    ldi      456        b = 456;            
+003 2009                    st       b                              
+004 1008                    ld       a          c = a + b;          
+005 3009                    add      b                              
+006 2010                    st       c                              
+007 0000                    halt                exit(0);            
+008 0000            a:     .word                int a;              
+009 0000            b:     .word                int b;              
+010 0000            c:     .word                int c;              
+000                        .end     start                          

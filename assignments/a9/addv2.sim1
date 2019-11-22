@@ -1,0 +1,10 @@
+#addv2.sim1  Add contents of 004 and 005, store sum in 006
+#MACHINE LANGUAGE   ASSEMBLY LANGUAGE           HIGH LEVEL LANGUAGE 
+000  1004           start:  ld      a            a = b + c; 
+001  3005                   add     b 
+002  2006                   st      c 
+003  0000                   halt                 exit(0); 
+004  0020           a:     .word    20           int a = 20; 
+005  0030           b:     .word    30           int b = 30; 
+006  0000           c:     .word    0            int c = 0; 
+000                        .end     start  

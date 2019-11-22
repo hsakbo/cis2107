@@ -1,0 +1,9 @@
+#addv1.sim1  Add contents of 004 and 005, store in 006
+000  1004     Load the accumulator with the word at 004
+001  3005     Add to the accumulator the word at 005
+002  2006     Store the accumulator in address 006
+003  0000     Halt
+004  0020     Address 004 initialized to 20
+005  0030     Address 005 initialized to 30
+006  0000     Address 006 initialized to 0
+000           Execution begins at address 000
