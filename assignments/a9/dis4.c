@@ -57,7 +57,7 @@
 
 int memory[MEMSIZE]; /* the ram */
 int p_end; //a little optimization
-
+int start; //memory location for the first instruction
 
 //my symbol table
 typedef struct sym_list
@@ -101,6 +101,15 @@ int main()
 {
   
   int max = load();
+  for (int i = 0; i < MEMSIZE; i++)
+    {
+      if (memory[i])
+	{
+	  start = i;
+	  break;
+	}
+    }	  
+  
   gen_symbols(max);
   gen_labels(max);
   disas_main(max);
@@ -157,7 +166,7 @@ void gen_labels(int max)
 
   l_list *node;
   
-  for (int i = 0; i < max; i++)
+  for (int i = start; i < max; i++)
     {
       int val = memory[i];
       int val1 = val / 1000;
@@ -221,12 +230,12 @@ char *var_gen()
 void gen_symbols(int max)
 {
   int val = 1;
-  int addr = 0;
+  int addr = start;
   while (val != 0)
     val = memory[addr++];
 
   p_end = addr;
-  if ((addr < max) && ((memory[addr] / 1000) == 0))
+  if ((addr < max) && !(memory[addr] / 1000))
     {
       head = (sym_list*) malloc(sizeof(sym_list));
       head->addr = addr;
@@ -236,7 +245,7 @@ void gen_symbols(int max)
     }
   
   sym_list *phead = head;
-  while ((addr < max) && ((memory[addr] / 1000) == 0))
+  while ((addr < max) && !(memory[addr] / 1000))
     {
       sym_list *node = (sym_list*) malloc(sizeof(sym_list));
       node->addr = addr;
@@ -254,7 +263,7 @@ int load()
   int items;
   char line[MAXLINE];
   int addr, val;
-  int max = 0;
+  int max;
   
   for (int i = 0; i < MEMSIZE; i++)
     memory[i] = 0;
@@ -279,11 +288,12 @@ int load()
 	    }
 	  else
 	    {
-	      memory[max] = addr;
-	      return max;  
+	      memory[max+1] = addr;
+	      return max+1;  
 	    }
 
 	case 2:
+	  max = addr;
 	  if ((addr < 000) || (addr > 999))
 	    {
 	      printf("illegal starting address %d,  exiting\n", addr);
@@ -295,7 +305,6 @@ int load()
 	      exit(1);
 	    }
 	  memory[addr] = val;
-	  max++;
   	}
 
     }
@@ -498,11 +507,11 @@ int disas_program(int addr)
       return val1;
 
     case LD:
-      printf("%-6sld  %s, %%r0\n", label, name);
+      printf("%-6sld %s, %%r0\n", label, name);
       return val1;
 
     case ST:
-      printf("%-6sst  %s, %%r0\n", label, name);
+      printf("%-6sst %%r0, %s\n", label, name);
       return val1;
 
     case ADD:
@@ -514,7 +523,7 @@ int disas_program(int addr)
       return val1;
 
     case LDA:
-      printf("%-6slda, %d\n", label, val234);
+      printf("%-6sldi %d, %%r0\n", label, val234);
       return val1;
 
     case SKIPSET:
@@ -565,7 +574,7 @@ sym_list *disas_data(sym_list *node)
 void disas_main(int max)
 {
   int i;
-  for (i = 0; i < p_end ; i++)
+  for (i = start; i < p_end ; i++)
     disas_program(i);
 
   sym_list *node = head;
