@@ -1,0 +1,88 @@
+1) return address = 0x80488c7
+2) @ret = 0xffffcf4c
+3) char name starts -> 0xffffcf00
+4) winner() = 0x08048a16
+
+5) gets has no length parameter to restrict its input, thus it will keep changing
+   data on the stack until the terminating newline or EOF.
+
+6) gets - fgets, getc
+   scanf - snprintf()
+   strcpy -> strncpy
+   strcat -> strncat
+
+
+disassembled main and be_superficially_friendly
+
+0804889c <main>:
+ 804889c:	8d 4c 24 04          	lea    0x4(%esp),%ecx
+ 80488a0:	83 e4 f0             	and    $0xfffffff0,%esp
+ 80488a3:	ff 71 fc             	pushl  -0x4(%ecx)
+ 80488a6:	55                   	push   %ebp
+ 80488a7:	89 e5                	mov    %esp,%ebp
+ 80488a9:	51                   	push   %ecx
+ 80488aa:	83 ec 14             	sub    $0x14,%esp
+ 80488ad:	83 ec 0c             	sub    $0xc,%esp
+ 80488b0:	6a 24                	push   $0x24
+ 80488b2:	e8 2d 01 00 00       	call   80489e4 <get_random_choice>
+ 80488b7:	83 c4 10             	add    $0x10,%esp
+ 80488ba:	89 45 f4             	mov    %eax,-0xc(%ebp)
+ 80488bd:	e8 7e 00 00 00       	call   8048940 <print_welcome>
+ 80488c2:	e8 3d 00 00 00       	call   8048904 <be_superficially_friendly>
+ 80488c7:	8b 45 f4             	mov    -0xc(%ebp),%eax
+ 80488ca:	c1 e0 03             	shl    $0x3,%eax
+ 80488cd:	05 80 b0 0e 08       	add    $0x80eb080,%eax
+ 80488d2:	83 ec 0c             	sub    $0xc,%esp
+ 80488d5:	50                   	push   %eax
+ 80488d6:	e8 ae 00 00 00       	call   8048989 <play_game>
+ 80488db:	83 c4 10             	add    $0x10,%esp
+ 80488de:	85 c0                	test   %eax,%eax
+ 80488e0:	74 07                	je     80488e9 <main+0x4d>
+ 80488e2:	e8 2f 01 00 00       	call   8048a16 <winner>
+ 80488e7:	eb 0e                	jmp    80488f7 <main+0x5b>
+ 80488e9:	83 ec 0c             	sub    $0xc,%esp
+ 80488ec:	ff 75 f4             	pushl  -0xc(%ebp)
+ 80488ef:	e8 42 01 00 00       	call   8048a36 <loser>
+ 80488f4:	83 c4 10             	add    $0x10,%esp
+ 80488f7:	b8 00 00 00 00       	mov    $0x0,%eax
+ 80488fc:	8b 4d fc             	mov    -0x4(%ebp),%ecx
+ 80488ff:	c9                   	leave  
+ 8048900:	8d 61 fc             	lea    -0x4(%ecx),%esp
+ 8048903:	c3                   	ret    
+
+08048904 <be_superficially_friendly>:
+ 8048904:	55                   	push   %ebp
+ 8048905:	89 e5                	mov    %esp,%ebp
+ 8048907:	83 ec 48             	sub    $0x48,%esp
+ 804890a:	83 ec 0c             	sub    $0xc,%esp
+ 804890d:	68 85 bf 0b 08       	push   $0x80bbf85
+ 8048912:	e8 e9 69 00 00       	call   804f300 <_IO_printf>
+ 8048917:	83 c4 10             	add    $0x10,%esp
+ 804891a:	83 ec 0c             	sub    $0xc,%esp
+ 804891d:	8d 45 b8             	lea    -0x48(%ebp),%eax
+ 8048920:	50                   	push   %eax
+ 8048921:	e8 ea 6e 00 00       	call   804f810 <_IO_gets>
+ 8048926:	83 c4 10             	add    $0x10,%esp
+ 8048929:	83 ec 08             	sub    $0x8,%esp
+ 804892c:	8d 45 b8             	lea    -0x48(%ebp),%eax
+ 804892f:	50                   	push   %eax
+ 8048930:	68 99 bf 0b 08       	push   $0x80bbf99
+ 8048935:	e8 c6 69 00 00       	call   804f300 <_IO_printf>
+ 804893a:	83 c4 10             	add    $0x10,%esp
+ 804893d:	90                   	nop
+ 804893e:	c9                   	leave  
+ 804893f:	c3                   	ret    
+
+
+
+#The comments should help, I forgot that the disas was copied right above.
+stack of superficially friendly():
+
+0x80488c7      #ret address
+0xffffcf68     #old ebp
+0x80bbf85      #I dont know what this is
+0xffffcf00     #address of character buffer
+0xffffcf00     #a replicated step for reasons I don't understand
+0x80bbf99      #some immediate value
+
+
